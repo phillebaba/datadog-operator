@@ -582,6 +582,7 @@ func getEnvVarDogstatsdSocket(dda *datadoghqv1alpha1.DatadogAgent) corev1.EnvVar
 
 // getEnvVarsForAPMAgent converts APM Agent Config into container env vars
 func getEnvVarsForAPMAgent(dda *datadoghqv1alpha1.DatadogAgent) ([]corev1.EnvVar, error) {
+	fmt.Printf("APM SPEC: %t %+v\n", apiutils.BoolValue(dda.Spec.Agent.Apm.Enabled), dda.Spec.Agent.Apm) //nolint:forbidigo
 	envVars := []corev1.EnvVar{
 		{
 			Name:  datadoghqv1alpha1.DDAPMEnabled,
