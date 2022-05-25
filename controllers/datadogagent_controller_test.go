@@ -22,9 +22,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	apicommon "github.com/DataDog/datadog-operator/apis/datadoghq/common"
-	commonv1 "github.com/DataDog/datadog-operator/apis/datadoghq/common/v1"
 	datadoghqv1alpha1 "github.com/DataDog/datadog-operator/apis/datadoghq/v1alpha1"
-	apiutils "github.com/DataDog/datadog-operator/apis/utils"
 	"github.com/DataDog/datadog-operator/controllers/testutils"
 	// +kubebuilder:scaffold:imports
 )
@@ -162,103 +160,103 @@ var _ = Describe("DatadogAgent Controller", func() {
 			})
 		})
 
-		It("Should update DaemonSet", func() {
-			agent := &datadoghqv1alpha1.DatadogAgent{}
-			Expect(k8sClient.Get(context.Background(), key, agent)).ToNot(HaveOccurred())
+		// It("Should update DaemonSet", func() {
+		// 	agent := &datadoghqv1alpha1.DatadogAgent{}
+		// 	Expect(k8sClient.Get(context.Background(), key, agent)).ToNot(HaveOccurred())
 
-			By("Updating on image change", func() {
-				checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-					agent.Spec.Agent.Image.Name = "datadog/agent:7.22.0"
-				}, nil)
-			})
+		// 	By("Updating on image change", func() {
+		// 		checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+		// 			agent.Spec.Agent.Image.Name = "datadog/agent:7.22.0"
+		// 		}, nil)
+		// 	})
 
-			By("Activating APM", func() {
-				checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-					agent.Spec.Agent.Apm.Enabled = apiutils.NewBoolPointer(true)
-				}, nil)
-			})
+		// 	By("Activating APM", func() {
+		// 		checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+		// 			agent.Spec.Agent.Apm.Enabled = apiutils.NewBoolPointer(true)
+		// 		}, nil)
+		// 	})
 
-			By("Disabling OrchestratorExplorer", func() {
-				checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-					agent.Spec.Features.OrchestratorExplorer = &datadoghqv1alpha1.OrchestratorExplorerConfig{
-						Enabled: apiutils.NewBoolPointer(false),
-					}
-				}, nil)
-			})
+		// 	By("Disabling OrchestratorExplorer", func() {
+		// 		checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+		// 			agent.Spec.Features.OrchestratorExplorer = &datadoghqv1alpha1.OrchestratorExplorerConfig{
+		// 				Enabled: apiutils.NewBoolPointer(false),
+		// 			}
+		// 		}, nil)
+		// 	})
 
-			By("Activating System Probe", func() {
-				checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-					agent.Spec.Agent.SystemProbe.Enabled = apiutils.NewBoolPointer(true)
-				}, nil)
-			})
+		// 	By("Activating System Probe", func() {
+		// 		checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+		// 			agent.Spec.Agent.SystemProbe.Enabled = apiutils.NewBoolPointer(true)
+		// 		}, nil)
+		// 	})
 
-			By("Update the DatadogAgent with custom conf.d and checks.d", func() {
-				checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-					agent.Spec.Agent.Config.Confd = &datadoghqv1alpha1.ConfigDirSpec{
-						ConfigMapName: confdConfigMapName,
-					}
-					agent.Spec.Agent.Config.Checksd = &datadoghqv1alpha1.ConfigDirSpec{
-						ConfigMapName: checksdConfigMapName,
-					}
-				}, nil)
-			})
+		// 	By("Update the DatadogAgent with custom conf.d and checks.d", func() {
+		// 		checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+		// 			agent.Spec.Agent.Config.Confd = &datadoghqv1alpha1.ConfigDirSpec{
+		// 				ConfigMapName: confdConfigMapName,
+		// 			}
+		// 			agent.Spec.Agent.Config.Checksd = &datadoghqv1alpha1.ConfigDirSpec{
+		// 				ConfigMapName: checksdConfigMapName,
+		// 			}
+		// 		}, nil)
+		// 	})
 
-			By("Enabled Process", func() {
-				checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-					agent.Spec.Agent.Process.Enabled = apiutils.NewBoolPointer(true)
-				}, nil)
-			})
-		})
+		// 	By("Enabled Process", func() {
+		// 		checkAgentUpdateOnDaemonSet(key, dsKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+		// 			agent.Spec.Agent.Process.Enabled = apiutils.NewBoolPointer(true)
+		// 		}, nil)
+		// 	})
+		// })
 	})
 
-	Context("Cluster Agent Deployment", func() {
-		namespace := "default"
-		name := "foo-dca"
-		key := types.NamespacedName{
-			Namespace: namespace,
-			Name:      name,
-		}
-		dcaName := fmt.Sprintf("%s-%s", name, "cluster-agent")
-		dcaKey := types.NamespacedName{
-			Namespace: namespace,
-			Name:      dcaName,
-		}
+	// Context("Cluster Agent Deployment", func() {
+	// 	namespace := "default"
+	// 	name := "foo-dca"
+	// 	key := types.NamespacedName{
+	// 		Namespace: namespace,
+	// 		Name:      name,
+	// 	}
+	// 	dcaName := fmt.Sprintf("%s-%s", name, "cluster-agent")
+	// 	dcaKey := types.NamespacedName{
+	// 		Namespace: namespace,
+	// 		Name:      dcaName,
+	// 	}
 
-		It("It should create Deployment", func() {
-			options := &testutils.NewDatadogAgentOptions{APIKey: "xnfdsjgdjcxlg42rqmzxzvdsgjdfklg", AppKey: "xnfdsjgdjcxlg42rqmzxzvdsgjdfklg-23678264"}
-			agent := testutils.NewDatadogAgent(namespace, name, "datadog/agent:7.22.0", options)
-			Expect(k8sClient.Create(context.Background(), agent)).Should(Succeed())
+	// 	It("It should create Deployment", func() {
+	// 		options := &testutils.NewDatadogAgentOptions{APIKey: "xnfdsjgdjcxlg42rqmzxzvdsgjdfklg", AppKey: "xnfdsjgdjcxlg42rqmzxzvdsgjdfklg-23678264"}
+	// 		agent := testutils.NewDatadogAgent(namespace, name, "datadog/agent:7.22.0", options)
+	// 		Expect(k8sClient.Create(context.Background(), agent)).Should(Succeed())
 
-			var agentClusterAgentHash string
-			agent = &datadoghqv1alpha1.DatadogAgent{}
-			getObjectAndCheck(agent, key, func() bool {
-				if agent.Status.ClusterAgent == nil {
-					return false
-				}
-				if agent.Status.ClusterAgent.CurrentHash == "" {
-					return false
-				}
+	// 		var agentClusterAgentHash string
+	// 		agent = &datadoghqv1alpha1.DatadogAgent{}
+	// 		getObjectAndCheck(agent, key, func() bool {
+	// 			if agent.Status.ClusterAgent == nil {
+	// 				return false
+	// 			}
+	// 			if agent.Status.ClusterAgent.CurrentHash == "" {
+	// 				return false
+	// 			}
 
-				agentClusterAgentHash = agent.Status.ClusterAgent.CurrentHash
-				return true
-			})
+	// 			agentClusterAgentHash = agent.Status.ClusterAgent.CurrentHash
+	// 			return true
+	// 		})
 
-			clusterAgent := &appsv1.Deployment{}
-			getObjectAndCheck(clusterAgent, dcaKey, func() bool {
-				return clusterAgent.Annotations[apicommon.MD5AgentDeploymentAnnotationKey] == agentClusterAgentHash
-			})
-		})
+	// 		clusterAgent := &appsv1.Deployment{}
+	// 		getObjectAndCheck(clusterAgent, dcaKey, func() bool {
+	// 			return clusterAgent.Annotations[apicommon.MD5AgentDeploymentAnnotationKey] == agentClusterAgentHash
+	// 		})
+	// 	})
 
-		It("Should update ClusterAgent", func() {
-			checkAgentUpdateOnClusterAgent(key, dcaKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
-				agent.Spec.ClusterAgent.Image.Name = "datadog/cluster-agent:1.0.0"
-				agent.Spec.ClusterAgent.Config.ClusterChecksEnabled = apiutils.NewBoolPointer(true)
-				agent.Spec.ClusterChecksRunner = datadoghqv1alpha1.DatadogAgentSpecClusterChecksRunnerSpec{
-					Image: &commonv1.AgentImageConfig{
-						Name: "datadog/agent:7.22.0",
-					},
-				}
-			}, nil)
-		})
-	})
+	// 	It("Should update ClusterAgent", func() {
+	// 		checkAgentUpdateOnClusterAgent(key, dcaKey, func(agent *datadoghqv1alpha1.DatadogAgent) {
+	// 			agent.Spec.ClusterAgent.Image.Name = "datadog/cluster-agent:1.0.0"
+	// 			agent.Spec.ClusterAgent.Config.ClusterChecksEnabled = apiutils.NewBoolPointer(true)
+	// 			agent.Spec.ClusterChecksRunner = datadoghqv1alpha1.DatadogAgentSpecClusterChecksRunnerSpec{
+	// 				Image: &commonv1.AgentImageConfig{
+	// 					Name: "datadog/agent:7.22.0",
+	// 				},
+	// 			}
+	// 		}, nil)
+	// 	})
+	// })
 })
